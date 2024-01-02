@@ -13,7 +13,9 @@ User = get_user_model()
 
 class SignUpView(View):
     def get(self, req: HttpRequest):
-        pass
+        return render(req, 'accounts/signup.html', {
+            'signup_form': SignUpForm()
+        })
 
     def post(self, req: HttpRequest):
         pass
@@ -21,7 +23,9 @@ class SignUpView(View):
 
 class LoginView(View):
     def get(self, req: HttpRequest):
-        pass
+        return render(req, 'accounts/login.html', {
+            'login_form': LoginForm()
+        })
 
     def post(self, req: HttpRequest):
         pass
