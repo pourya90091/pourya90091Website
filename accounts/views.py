@@ -5,7 +5,7 @@ from django.urls import reverse
 # from accounts.models import User
 from django.views import View
 from django.http import Http404, HttpRequest
-from accounts.forms import SignUpForm, LoginForm
+from accounts.forms import SignUpForm, LoginForm, LogoutForm
 
 
 User = get_user_model()
@@ -87,4 +87,46 @@ class LoginView(View):
 
         return render(req, "accounts/login.html", {
             "login_form": login_form
+        })
+
+
+class LogoutView(View):
+    def check_user(func):
+        def wrapper(*args, **kwargs):
+            req: HttpRequest = args[1]
+            if req.user.username == "":
+                raise Http404()
+            return func(*args, **kwargs)
+        return wrapper
+
+    @check_user
+    def get(self, req: HttpRequest):
+        return render(req, "accounts/logout.html", {
+            "logout_form": LogoutForm()
+        })
+
+    @check_user
+    def post(self, req: HttpRequest):
+        def data_validation():
+            data_is_valid = True
+
+            if not user.check_password(password):
+                logout_form.add_error("password", "Password is not correct")
+                data_is_valid = False
+
+            return data_is_valid
+
+        logout_form = LogoutForm(req.POST)
+        if logout_form.is_valid():
+            password = logout_form.cleaned_data.get("password")
+
+            user = req.user
+
+            data_is_valid = data_validation()
+            if data_is_valid:
+                logout(req)
+                return redirect(reverse("index"))
+
+        return render(req, "accounts/logout.html", {
+            "logout_form": logout_form
         })
