@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.views import View
 from django.http import Http404, HttpRequest
 from accounts.forms import SignUpForm, LoginForm, LogoutForm
+from utils.utils import check_user
 
 
 User = get_user_model()
@@ -91,14 +92,6 @@ class LoginView(View):
 
 
 class LogoutView(View):
-    def check_user(func):
-        def wrapper(*args, **kwargs):
-            req: HttpRequest = args[1]
-            if req.user.username == "":
-                raise Http404()
-            return func(*args, **kwargs)
-        return wrapper
-
     @check_user
     def get(self, req: HttpRequest):
         return render(req, "accounts/logout.html", {
