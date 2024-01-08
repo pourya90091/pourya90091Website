@@ -49,7 +49,8 @@ class SignUpView(View):
                 new_user.set_password(password)
                 new_user.save()
 
-                return redirect(reverse("index"))
+                login(req, new_user)
+                return redirect(reverse("dashboard"))
 
         return render(req, "accounts/signup.html", {
             "signup_form": signup_form
