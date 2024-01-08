@@ -6,18 +6,20 @@ from django.urls import reverse
 from django.views import View
 from django.http import Http404, HttpRequest
 from accounts.forms import SignUpForm, LoginForm, LogoutForm
-from utils.utils import check_user
+from utils.authorize import check_user_logged_in, redirect_logged_in_user
 
 
 User = get_user_model()
 
 
 class SignUpView(View):
+    @redirect_logged_in_user
     def get(self, req: HttpRequest):
         return render(req, "accounts/signup.html", {
             "signup_form": SignUpForm()
         })
 
+    @redirect_logged_in_user
     def post(self, req: HttpRequest):
         def data_validation(username):
             data_is_valid = True
@@ -27,7 +29,7 @@ class SignUpView(View):
                 signup_form.add_error("username", "Username is already taken.")
                 data_is_valid = False
 
-            if not password == confirm_password:
+            if password != confirm_password:
                 signup_form.add_error("password", "Password not confirmed correctly.")
                 data_is_valid = False
 
@@ -55,11 +57,13 @@ class SignUpView(View):
 
 
 class LoginView(View):
+    @redirect_logged_in_user
     def get(self, req: HttpRequest):
         return render(req, "accounts/login.html", {
             "login_form": LoginForm()
         })
 
+    @redirect_logged_in_user
     def post(self, req: HttpRequest):
         def data_validation():
             data_is_valid = True
@@ -84,7 +88,7 @@ class LoginView(View):
             data_is_valid = data_validation()
             if data_is_valid:
                 login(req, user)
-                return redirect(reverse("index"))
+                return redirect(reverse("dashboard"))
 
         return render(req, "accounts/login.html", {
             "login_form": login_form
@@ -92,13 +96,13 @@ class LoginView(View):
 
 
 class LogoutView(View):
-    @check_user
+    @check_user_logged_in
     def get(self, req: HttpRequest):
         return render(req, "accounts/logout.html", {
             "logout_form": LogoutForm()
         })
 
-    @check_user
+    @check_user_logged_in
     def post(self, req: HttpRequest):
         def data_validation():
             data_is_valid = True
