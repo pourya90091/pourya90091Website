@@ -4,7 +4,7 @@ from django.utils.crypto import get_random_string
 from django.urls import reverse
 # from accounts.models import User
 from django.views import View
-from django.http import Http404, HttpRequest
+from django.http import HttpRequest
 from accounts.forms import SignUpForm, LoginForm, LogoutForm
 from utils.authorize import check_user_logged_in, redirect_logged_in_user
 

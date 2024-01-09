@@ -1,10 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from django.http import Http404, HttpRequest
+from django.http import HttpRequest
 from django.views import View
 from panel.forms import getProfileForm
 from utils.authorize import check_user_logged_in
@@ -23,8 +20,7 @@ class ProfileView(View):
     @check_user_logged_in
     def get(self, req: HttpRequest):
         return render(req, "panel/profile.html", {
-            "profile_form": getProfileForm(req.user.username, req.user.email),
-            "user": req.user
+            "profile_form": getProfileForm(req.user.username, req.user.email)
         })
 
     @check_user_logged_in
@@ -65,6 +61,5 @@ class ProfileView(View):
                 return redirect(reverse("dashboard"))
 
         return render(req, "panel/profile.html", {
-            "profile_form": profile_form,
-            "user": req.user
+            "profile_form": profile_form
         })
