@@ -6,7 +6,7 @@
   <h1>Index</h1>
   <p>Hey dude welcome.</p>
   <div>
-    <a href="{{ login_url }}">Login Page</a>
-    <a href="{{ signup_url }}">Sign Up Page</a>
+    <a href="{% url 'login' %}">Login Page</a>
+    <a href="{% url 'signup' %}">Sign Up Page</a>
   </div>
 {% endblock %}

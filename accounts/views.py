@@ -21,7 +21,7 @@ class SignUpView(View):
 
     @redirect_logged_in_user
     def post(self, req: HttpRequest):
-        def data_validation(username):
+        def data_validation():
             data_is_valid = True
 
             user_exists = User.objects.filter(username__iexact=username).exists()
@@ -42,7 +42,7 @@ class SignUpView(View):
             confirm_password = signup_form.cleaned_data.get("confirm_password")
             email = signup_form.cleaned_data.get("email")
 
-            data_is_valid = data_validation(username)
+            data_is_valid = data_validation()
             if data_is_valid:
                 new_user = User(username=username,
                                 email=email)
