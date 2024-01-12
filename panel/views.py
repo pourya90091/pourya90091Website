@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.http import HttpRequest
 from django.views import View
-from panel.forms import getProfileForm
+from panel.forms import ProfileForm
 from utils.authorize import check_user_logged_in
 
 
@@ -19,8 +19,10 @@ class PanelView(View):
 class ProfileView(View):
     @check_user_logged_in
     def get(self, req: HttpRequest):
+        ProfileForm.set_placeholder(req.user.username, req.user.email)
+
         return render(req, "panel/profile.html", {
-            "profile_form": getProfileForm(req.user.username, req.user.email)
+            "profile_form": ProfileForm()
         })
 
     @check_user_logged_in
@@ -43,7 +45,7 @@ class ProfileView(View):
 
             return data_is_valid
 
-        profile_form = getProfileForm(req.user.username, req.user.email)(req.POST)
+        profile_form = ProfileForm(req.POST)
         if profile_form.is_valid():
             username = profile_form.cleaned_data.get("username")
             old_password = profile_form.cleaned_data.get("old_password")
@@ -53,8 +55,8 @@ class ProfileView(View):
 
             data_is_valid = data_validation()
             if data_is_valid:
-                req.user.username = username if username else req.user.username
-                req.user.email = email if email else req.user.email
+                req.user.username = username or req.user.username
+                req.user.email = email or req.user.email
                 req.user.set_password(new_password) if new_password else None
                 req.user.save()
 

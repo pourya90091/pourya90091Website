@@ -44,8 +44,7 @@ class SignUpView(View):
 
             data_is_valid = data_validation()
             if data_is_valid:
-                new_user = User(username=username,
-                                email=email)
+                new_user = User(username=username, email=email)
                 new_user.set_password(password)
                 new_user.save()
 
@@ -72,10 +71,10 @@ class LoginView(View):
             if not user:
                 login_form.add_error("username", "There is no user with that username.")
                 data_is_valid = False
-
-            if not user.check_password(password):
-                login_form.add_error("password", "Password is not correct")
-                data_is_valid = False
+            else:
+                if not user.check_password(password):
+                    login_form.add_error("password", "Password is not correct")
+                    data_is_valid = False
 
             return data_is_valid
 
@@ -108,7 +107,7 @@ class LogoutView(View):
         def data_validation():
             data_is_valid = True
 
-            if not user.check_password(password):
+            if not req.user.check_password(password):
                 logout_form.add_error("password", "Password is not correct")
                 data_is_valid = False
 
@@ -117,8 +116,6 @@ class LogoutView(View):
         logout_form = LogoutForm(req.POST)
         if logout_form.is_valid():
             password = logout_form.cleaned_data.get("password")
-
-            user = req.user
 
             data_is_valid = data_validation()
             if data_is_valid:
