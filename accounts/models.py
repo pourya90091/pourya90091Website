@@ -4,3 +4,4 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
     activate_code = models.CharField(max_length=64, blank=False, default=None)
+    is_email_active = models.BooleanField(default=False)

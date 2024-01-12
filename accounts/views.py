@@ -53,7 +53,8 @@ class SignUpView(View):
             if data_is_valid:
                 new_user = User(username=username,
                                 email=email,
-                                is_active=False,
+                                is_active=True,
+                                is_email_active=False,
                                 activate_code=get_random_string(64))
                 new_user.set_password(password)
                 new_user.save()
@@ -137,6 +138,20 @@ class LogoutView(View):
         })
 
 
+class EmailVerificationView(View):
+    @check_user_logged_in
+    def get(self, req: HttpRequest):
+        if req.user.email:
+            url = f"{BASE_URL}{reverse('activate_account', args=[req.user.activate_code])}"
+            send_email("Email Verification", req.user.email, {"url": url}, "email/email_verification.html")
+            msg = "Check your mailbox."
+        else:
+            msg = "You have not any email to verify."
+
+        messages.add_message(req, messages.SUCCESS, msg)
+        return redirect(reverse("dashboard"))
+
+
 class ActivateView(View):
     @check_user_logged_in
     def get(self, req: HttpRequest, activate_code):
@@ -151,20 +166,6 @@ class ActivateView(View):
             msg = "Your email has been verified."
         else:
             msg = "Your email has already been verified."
-
-        messages.add_message(req, messages.SUCCESS, msg)
-        return redirect(reverse("dashboard"))
-
-
-class EmailVerificationView(View):
-    @check_user_logged_in
-    def get(self, req: HttpRequest):
-        if req.user.email:
-            url = f"{BASE_URL}{reverse('activate_account', args=[req.user.activate_code])}"  
-            send_email("Email Verification", req.user.email, {"url": url}, "email/email_verification.html")
-            msg = "Check your mailbox."
-        else:
-            msg = "You have not any email to verify."
 
         messages.add_message(req, messages.SUCCESS, msg)
         return redirect(reverse("dashboard"))
