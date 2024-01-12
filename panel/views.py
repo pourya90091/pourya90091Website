@@ -17,7 +17,8 @@ class PanelView(View):
         notification = list(msg)[0] if (msg := messages.get_messages(req)) else None
 
         return render(req, "panel/dashboard.html", {
-            "notification": notification
+            "notification": notification,
+            "user": req.user
         })
 
 

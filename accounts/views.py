@@ -8,7 +8,13 @@ from django.views import View
 from django.http import HttpRequest, Http404
 from accounts.forms import SignUpForm, LoginForm, LogoutForm
 from utils.authorize import check_user_logged_in, redirect_logged_in_user
+from utils.email import send_email
+from dotenv import load_dotenv
+import os
 
+
+load_dotenv()
+BASE_URL = os.getenv("BASE_URL")
 
 User = get_user_model()
 
@@ -47,6 +53,7 @@ class SignUpView(View):
             if data_is_valid:
                 new_user = User(username=username,
                                 email=email,
+                                is_active=False,
                                 activate_code=get_random_string(64))
                 new_user.set_password(password)
                 new_user.save()
@@ -144,6 +151,20 @@ class ActivateView(View):
             msg = "Your email has been verified."
         else:
             msg = "Your email has already been verified."
+
+        messages.add_message(req, messages.SUCCESS, msg)
+        return redirect(reverse("dashboard"))
+
+
+class EmailVerificationView(View):
+    @check_user_logged_in
+    def get(self, req: HttpRequest):
+        if req.user.email:
+            url = f"{BASE_URL}{reverse('activate_account', args=[req.user.activate_code])}"  
+            send_email("Email Verification", req.user.email, {"url": url}, "email/email_verification.html")
+            msg = "Check your mailbox."
+        else:
+            msg = "You have not any email to verify."
 
         messages.add_message(req, messages.SUCCESS, msg)
         return redirect(reverse("dashboard"))

@@ -6,5 +6,8 @@
     <div id="options">
         <button><a href="{% url 'profile' %}">Profile</a></button>
         <button><a href="{% url 'logout' %}">Logout</a></button>
+        {% if not user.is_active %}
+        <button><a href="{% url 'email_verification' %}">Verify Email Address</a></button>
+        {% endif %}
     </div>
 {% endblock %}
