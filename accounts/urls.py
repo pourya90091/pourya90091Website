@@ -5,4 +5,5 @@ urlpatterns = [
     path("signup", views.SignUpView.as_view(), name="signup"),
     path("login", views.LoginView.as_view(), name="login"),
     path("logout", views.LogoutView.as_view(), name="logout"),
+    path("activate/<str:activate_code>", views.ActivateView.as_view(), name="activate_account"),
 ]

@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, get_user_model
+from django.contrib import messages
 from django.utils.crypto import get_random_string
 from django.urls import reverse
 # from accounts.models import User
 from django.views import View
-from django.http import HttpRequest
+from django.http import HttpRequest, Http404
 from accounts.forms import SignUpForm, LoginForm, LogoutForm
 from utils.authorize import check_user_logged_in, redirect_logged_in_user
 
@@ -44,7 +45,9 @@ class SignUpView(View):
 
             data_is_valid = data_validation()
             if data_is_valid:
-                new_user = User(username=username, email=email)
+                new_user = User(username=username,
+                                email=email,
+                                activate_code=get_random_string(64))
                 new_user.set_password(password)
                 new_user.save()
 
@@ -125,3 +128,22 @@ class LogoutView(View):
         return render(req, "accounts/logout.html", {
             "logout_form": logout_form
         })
+
+
+class ActivateView(View):
+    @check_user_logged_in
+    def get(self, req: HttpRequest, activate_code):
+        if activate_code != req.user.activate_code:
+            raise Http404()
+
+        if not req.user.is_active:
+            req.user.is_active = True
+            req.user.activate_code = get_random_string(64)
+            req.user.save()
+
+            msg = "Your email has been verified."
+        else:
+            msg = "Your email has already been verified."
+
+        messages.add_message(req, messages.SUCCESS, msg)
+        return redirect(reverse("dashboard"))

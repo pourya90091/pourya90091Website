@@ -8,6 +8,11 @@
     {% block js_ref %}{% endblock %}
 </head>
 <body>
+    <div id="notification">
+        <p>
+            {% if notification %}{{notification}}{% endif %}
+        </p>
+    </div>
 {% block header %}{% endblock %}
 {% block body %}{% endblock %}
 {% block footer %}{% endblock %}

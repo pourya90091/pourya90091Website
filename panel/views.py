@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
+from django.contrib import messages
 from django.urls import reverse
 from django.http import HttpRequest
 from django.views import View
@@ -13,7 +14,11 @@ User = get_user_model()
 class PanelView(View):
     @check_user_logged_in
     def get(self, req: HttpRequest):
-        return render(req, "panel/dashboard.html", {})
+        notification = list(msg)[0] if (msg := messages.get_messages(req)) else None
+
+        return render(req, "panel/dashboard.html", {
+            "notification": notification
+        })
 
 
 class ProfileView(View):
