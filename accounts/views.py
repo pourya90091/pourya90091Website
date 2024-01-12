@@ -158,8 +158,8 @@ class ActivateView(View):
         if activate_code != req.user.activate_code:
             raise Http404()
 
-        if not req.user.is_active:
-            req.user.is_active = True
+        if not req.user.is_email_active:
+            req.user.is_email_active = True
             req.user.activate_code = get_random_string(64)
             req.user.save()
 
