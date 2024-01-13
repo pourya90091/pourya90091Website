@@ -4,7 +4,7 @@ from django import forms
 class ProfileForm(forms.Form):
     username = forms.CharField(max_length=64, required=False)
     email = forms.EmailField(max_length=128, required=False)
-    old_password = forms.CharField(max_length=128, required=True)
+    current_password = forms.CharField(max_length=128, required=True)
     new_password = forms.CharField(max_length=128, required=False)
     confirm_new_password = forms.CharField(max_length=128, required=False)
 

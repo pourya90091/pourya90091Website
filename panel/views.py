@@ -40,9 +40,10 @@ class ProfileView(View):
                 user_exists = User.objects.filter(username__iexact=username).exists()
                 if user_exists:
                     profile_form.add_error("username", "Username is already taken.")
+                    data_is_valid = False
 
-            if not req.user.check_password(old_password):
-                profile_form.add_error("old_password", "Old password is not correct.")
+            if not req.user.check_password(current_password):
+                profile_form.add_error("current_password", "Current password is not correct.")
                 data_is_valid = False
 
             if new_password != confirm_new_password:
@@ -54,16 +55,22 @@ class ProfileView(View):
         profile_form = ProfileForm(req.POST)
         if profile_form.is_valid():
             username = profile_form.cleaned_data.get("username")
-            old_password = profile_form.cleaned_data.get("old_password")
+            email = profile_form.cleaned_data.get("email")
+            current_password = profile_form.cleaned_data.get("current_password")
             new_password = profile_form.cleaned_data.get("new_password")
             confirm_new_password = profile_form.cleaned_data.get("confirm_new_password")
-            email = profile_form.cleaned_data.get("email")
 
             data_is_valid = data_validation()
             if data_is_valid:
-                req.user.username = username or req.user.username
-                req.user.email = email or req.user.email
-                req.user.set_password(new_password) if new_password else None
+                if username:
+                    req.user.username = username
+                if email:
+                    # if the new email was not same as old email, then is_email_active should be False
+                    req.user.is_email_active = email == req.user.email
+                    req.user.email = email
+                if new_password:
+                    req.user.set_password(new_password)
+
                 req.user.save()
 
                 return redirect(reverse("dashboard"))
