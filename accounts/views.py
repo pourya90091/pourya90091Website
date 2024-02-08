@@ -178,16 +178,28 @@ class RecoverPasswordView(View):
         })
 
     def post(self, req: HttpRequest):
+        def data_validation():
+            data_is_valid = True
+
+            user_exists = User.objects.filter(email__iexact=email).exists()
+            if not user_exists:
+                recover_password_form.add_error("email", "There is no user with that email.")
+                data_is_valid = False
+
+            return data_is_valid
+
         recover_password_form = RecoverPasswordForm(req.POST)
         if recover_password_form.is_valid():
             email = recover_password_form.cleaned_data.get("email")
 
-            user = User.objects.filter(email__iexact=email).first()
-            url = f"{BASE_URL}{reverse('change_password', args=[user.activate_code])}"
-            send_email("Recover Password", email, {"url": url}, "email/recover_password.html")
-            messages.add_message(req, messages.SUCCESS, "Check your mailbox.")
+            data_is_valid = data_validation()
+            if data_is_valid:
+                user = User.objects.filter(email__iexact=email).first()
+                url = f"{BASE_URL}{reverse('change_password', args=[user.activate_code])}"
+                send_email("Recover Password", email, {"url": url}, "email/recover_password.html")
+                messages.add_message(req, messages.SUCCESS, "Check your mailbox.")
 
-            return redirect(reverse("index"))
+                return redirect(reverse("index"))
 
         return render(req, "accounts/recover_password.html", {
             "recover_password_form": recover_password_form
@@ -220,7 +232,6 @@ class ChangePasswordView(View):
                 data_is_valid = False
 
             return data_is_valid
-
 
         change_password_form = ChangePasswordForm(req.POST)
         if change_password_form.is_valid():
