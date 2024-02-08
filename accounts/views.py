@@ -6,7 +6,7 @@ from django.urls import reverse
 # from accounts.models import User
 from django.views import View
 from django.http import HttpRequest, Http404
-from accounts.forms import SignUpForm, LoginForm, LogoutForm
+from accounts.forms import SignUpForm, LoginForm, LogoutForm, RecoverPasswordForm, ChangePasswordForm
 from utils.authorize import check_user_logged_in, redirect_logged_in_user
 from utils.email import send_email
 from dotenv import load_dotenv
@@ -169,3 +169,73 @@ class ActivateView(View):
 
         messages.add_message(req, messages.SUCCESS, msg)
         return redirect(reverse("dashboard"))
+
+
+class RecoverPasswordView(View):
+    def get(self, req: HttpRequest):
+        return render(req, "accounts/recover_password.html", {
+            "recover_password_form": RecoverPasswordForm()
+        })
+
+    def post(self, req: HttpRequest):
+        recover_password_form = RecoverPasswordForm(req.POST)
+        if recover_password_form.is_valid():
+            email = recover_password_form.cleaned_data.get("email")
+
+            user = User.objects.filter(email__iexact=email).first()
+            url = f"{BASE_URL}{reverse('change_password', args=[user.activate_code])}"
+            send_email("Recover Password", email, {"url": url}, "email/recover_password.html")
+            messages.add_message(req, messages.SUCCESS, "Check your mailbox.")
+
+            return redirect(reverse("index"))
+
+        return render(req, "accounts/recover_password.html", {
+            "recover_password_form": recover_password_form
+        })
+
+
+class ChangePasswordView(View):
+    def check_activate_code(func):
+        def wrapper(*args, **kwargs):
+            activate_code = kwargs["activate_code"]
+            user_exists = User.objects.filter(activate_code__iexact=activate_code).exists()
+            if not user_exists:
+                raise Http404()
+            return func(*args, **kwargs)
+        return wrapper
+
+    @check_activate_code
+    def get(self, req: HttpRequest, activate_code):
+        return render(req, "accounts/change_password.html", {
+            "change_password_form": ChangePasswordForm()
+        })
+
+    @check_activate_code
+    def post(self, req: HttpRequest, activate_code):
+        def data_validation():
+            data_is_valid = True
+
+            if new_password != confirm_new_password:
+                change_password_form.add_error("new_password", "New password not confirmed correctly.")
+                data_is_valid = False
+
+            return data_is_valid
+
+
+        change_password_form = ChangePasswordForm(req.POST)
+        if change_password_form.is_valid():
+            new_password = change_password_form.cleaned_data.get("new_password")
+            confirm_new_password = change_password_form.cleaned_data.get("confirm_new_password")
+
+            data_is_valid = data_validation()
+            if data_is_valid:
+                user = User.objects.filter(activate_code__iexact=activate_code).first()
+                user.set_password(new_password)
+                user.activate_code = get_random_string(64)
+                user.save()
+
+                return redirect(reverse("index"))
+
+        return render(req, "accounts/change_password.html", {
+            "change_password_form": change_password_form
+        })

@@ -15,3 +15,12 @@ class LoginForm(forms.Form):
 
 class LogoutForm(forms.Form):
     password = forms.CharField(max_length=128, required=True)
+
+
+class RecoverPasswordForm(forms.Form):
+    email = forms.EmailField(max_length=128, required=True)
+
+
+class ChangePasswordForm(forms.Form):
+    new_password = forms.CharField(max_length=128, required=True)
+    confirm_new_password = forms.CharField(max_length=128, required=True)
