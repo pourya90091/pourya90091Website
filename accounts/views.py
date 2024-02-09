@@ -1,13 +1,15 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, get_user_model
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils.crypto import get_random_string
+from django.utils.decorators import method_decorator
 from django.urls import reverse
 # from accounts.models import User
 from django.views import View
 from django.http import HttpRequest, Http404
 from accounts.forms import SignUpForm, LoginForm, LogoutForm, RecoverPasswordForm, ChangePasswordForm
-from utils.authorize import check_user_logged_in, redirect_logged_in_user
+from utils.authorize import redirect_logged_in_user
 from utils.email import send_email
 from dotenv import load_dotenv
 import os
@@ -106,14 +108,13 @@ class LoginView(View):
         })
 
 
+@method_decorator(login_required, name='dispatch')
 class LogoutView(View):
-    @check_user_logged_in
     def get(self, req: HttpRequest):
         return render(req, "accounts/logout.html", {
             "logout_form": LogoutForm()
         })
 
-    @check_user_logged_in
     def post(self, req: HttpRequest):
         def data_validation():
             data_is_valid = True
@@ -138,8 +139,8 @@ class LogoutView(View):
         })
 
 
+@method_decorator(login_required, name='dispatch')
 class EmailVerificationView(View):
-    @check_user_logged_in
     def get(self, req: HttpRequest):
         if req.user.email:
             url = f"{BASE_URL}{reverse('activate_account', args=[req.user.activate_code])}"
@@ -152,8 +153,8 @@ class EmailVerificationView(View):
         return redirect(reverse("dashboard"))
 
 
+@method_decorator(login_required, name='dispatch')
 class ActivateView(View):
-    @check_user_logged_in
     def get(self, req: HttpRequest, activate_code):
         if activate_code != req.user.activate_code:
             raise Http404()

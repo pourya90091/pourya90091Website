@@ -1,18 +1,19 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.http import HttpRequest
 from django.views import View
 from panel.forms import ProfileForm
-from utils.authorize import check_user_logged_in
 
 
 User = get_user_model()
 
 
+@method_decorator(login_required, name='dispatch')
 class DashboardView(View):
-    @check_user_logged_in
     def get(self, req: HttpRequest):
         notification = list(msg)[0] if (msg := messages.get_messages(req)) else None
 
@@ -22,8 +23,8 @@ class DashboardView(View):
         })
 
 
+@method_decorator(login_required, name='dispatch')
 class ProfileView(View):
-    @check_user_logged_in
     def get(self, req: HttpRequest):
         ProfileForm.set_placeholder(req.user.username, req.user.email)
 
@@ -31,7 +32,6 @@ class ProfileView(View):
             "profile_form": ProfileForm()
         })
 
-    @check_user_logged_in
     def post(self, req: HttpRequest):
         def data_validation():
             data_is_valid = True
