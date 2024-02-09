@@ -23,4 +23,5 @@ urlpatterns = [
     path('', views.index, name='index'),
     path("accounts/", include("accounts.urls")),
     path("panel/", include("panel.urls")),
+    path("article/", include("article.urls")),
 ]
