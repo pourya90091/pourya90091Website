@@ -11,7 +11,7 @@ from utils.authorize import check_user_logged_in
 User = get_user_model()
 
 
-class PanelView(View):
+class DashboardView(View):
     @check_user_logged_in
     def get(self, req: HttpRequest):
         notification = list(msg)[0] if (msg := messages.get_messages(req)) else None
