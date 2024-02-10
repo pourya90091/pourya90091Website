@@ -13,6 +13,7 @@ from utils.authorize import redirect_logged_in_user
 from utils.email import send_email
 from dotenv import load_dotenv
 import os
+import re
 
 
 load_dotenv()
@@ -101,7 +102,10 @@ class LoginView(View):
             data_is_valid = data_validation()
             if data_is_valid:
                 login(req, user)
-                return redirect(reverse("dashboard"))
+                url = req.build_absolute_uri()
+                return redirect(reverse("dashboard")
+                                if not "?next" in url
+                                else re.search(r"\?next=(.+)$", url).group(1))
 
         return render(req, "accounts/login.html", {
             "login_form": login_form
