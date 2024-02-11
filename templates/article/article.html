@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
-{% block title %}Article{% endblock %}
+{% block title %}{{article.title}}{% endblock %}
 
 {% block body %}
-  <h2>Article</h2>
+  <div>{{article.content|safe}}</div>
 {% endblock %}
