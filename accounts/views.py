@@ -34,7 +34,7 @@ class SignUpView(View):
         def data_validation():
             data_is_valid = True
 
-            user_exists = User.objects.filter(username__iexact=username).exists()
+            user_exists = User.objects.filter(username__exact=username).exists()
             if user_exists:
                 signup_form.add_error("username", "Username is already taken.")
                 data_is_valid = False
@@ -97,7 +97,7 @@ class LoginView(View):
             username = login_form.cleaned_data.get("username")
             password = login_form.cleaned_data.get("password")
 
-            user = User.objects.filter(username__iexact=username).first()
+            user = User.objects.filter(username__exact=username).first()
 
             data_is_valid = data_validation()
             if data_is_valid:
@@ -215,7 +215,7 @@ class ChangePasswordView(View):
     def check_activate_code(func):
         def wrapper(*args, **kwargs):
             activate_code = kwargs["activate_code"]
-            user_exists = User.objects.filter(activate_code__iexact=activate_code).exists()
+            user_exists = User.objects.filter(activate_code__exact=activate_code).exists()
             if not user_exists:
                 raise Http404()
             return func(*args, **kwargs)
@@ -245,7 +245,7 @@ class ChangePasswordView(View):
 
             data_is_valid = data_validation()
             if data_is_valid:
-                user = User.objects.filter(activate_code__iexact=activate_code).first()
+                user = User.objects.filter(activate_code__exact=activate_code).first()
                 user.set_password(new_password)
                 user.activate_code = get_random_string(64)
                 user.save()

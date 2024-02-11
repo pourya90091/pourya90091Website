@@ -37,7 +37,7 @@ class ProfileView(View):
             data_is_valid = True
 
             if username:
-                user_exists = User.objects.filter(username__iexact=username).exists()
+                user_exists = User.objects.filter(username__exact=username).exists()
                 if user_exists:
                     profile_form.add_error("username", "Username is already taken.")
                     data_is_valid = False
