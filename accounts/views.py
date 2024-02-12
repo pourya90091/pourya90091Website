@@ -103,9 +103,11 @@ class LoginView(View):
             if data_is_valid:
                 login(req, user)
                 url = req.build_absolute_uri()
-                return redirect(reverse("dashboard")
-                                if not "?next" in url
-                                else re.search(r"\?next=(.+)$", url).group(1))
+                return redirect(
+                    reverse("dashboard")
+                    if "?next" not in url
+                    else re.search(r"\?next=(.+)$", url)[1]
+                )
 
         return render(req, "accounts/login.html", {
             "login_form": login_form
