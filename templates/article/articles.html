@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+
+{% block title %}Your Articles{% endblock %}
+
+{% block body %}
+  <div>
+    {% for article in articles %}
+    <a href="{% url 'article' user.username article.slug %}">{{article.title}}</a>
+    {% endfor %}
+    {{err}}
+  </div>
+{% endblock %}

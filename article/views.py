@@ -29,6 +29,24 @@ class ArticleView(View):
         raise Http404()
 
 
+class ArticlesView(View):
+    def get(self, req: HttpRequest, username):
+        user = User.objects.filter(username__exact=username).first()
+        if not user:
+            raise Http404()
+
+        articles = Article.objects.filter(user__exact=user).all()
+        if articles:
+            return render(req, "article/articles.html", {
+                "articles": articles,
+                "user": user
+            })
+
+        return render(req, "article/articles.html", {
+            "err": f"{user.username} have not published any articles yet."
+        })
+
+
 @method_decorator(login_required, name='dispatch')
 class CreateArticleView(View):
     def get(self, req: HttpRequest):
