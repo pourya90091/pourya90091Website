@@ -8,11 +8,12 @@ class ProfileForm(forms.Form):
     new_password = forms.CharField(max_length=128, required=False)
     confirm_new_password = forms.CharField(max_length=128, required=False)
 
-    @classmethod
-    def set_placeholder(cls, username_placeholder, email_placeholder):
-        cls.base_fields["username"].widget=forms.TextInput(attrs={
+    def __init__(self, username_placeholder=None, email_placeholder=None, *args, **kwargs) -> None:
+        self.base_fields["username"].widget=forms.TextInput(attrs={
             "placeholder": username_placeholder
-        })
-        cls.base_fields["email"].widget=forms.TextInput(attrs={
+        } if username_placeholder else None)
+        self.base_fields["email"].widget=forms.TextInput(attrs={
             "placeholder": email_placeholder
-        })
+        } if email_placeholder else None)
+
+        super().__init__(*args, **kwargs)

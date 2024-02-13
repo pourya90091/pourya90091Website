@@ -26,10 +26,8 @@ class DashboardView(View):
 @method_decorator(login_required, name='dispatch')
 class ProfileView(View):
     def get(self, req: HttpRequest):
-        ProfileForm.set_placeholder(req.user.username, req.user.email)
-
         return render(req, "panel/profile.html", {
-            "profile_form": ProfileForm()
+            "profile_form": ProfileForm(req.user.username, req.user.email)
         })
 
     def post(self, req: HttpRequest):
@@ -52,7 +50,7 @@ class ProfileView(View):
 
             return data_is_valid
 
-        profile_form = ProfileForm(req.POST)
+        profile_form = ProfileForm(req.user.username, req.user.email, data=req.POST)
         if profile_form.is_valid():
             username = profile_form.cleaned_data.get("username")
             email = profile_form.cleaned_data.get("email")
