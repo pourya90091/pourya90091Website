@@ -6,6 +6,10 @@ const content = document.getElementById('id_content');
 
 md_viewer.innerHTML = converter.makeHtml(content.value) // in case of first loading of the page
 
-content.addEventListener('keypress', function() {
+content.addEventListener('keydown', function() {
+    md_viewer.innerHTML = converter.makeHtml(content.value)
+});
+
+content.addEventListener('keyup', function() {
     md_viewer.innerHTML = converter.makeHtml(content.value)
 });
