@@ -3,13 +3,14 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block body %}
-    <div id="options">
-        <button><a href="{% url 'profile' %}">Profile</a></button>
-        <button><a href="{% url 'logout' %}">Logout</a></button>
+  <div>
+    <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+      <li><a href="{% url 'profile' %}" class="nav-link px-2 text-black fw-bold link-primary">Profile</a></li>
         {% if not user.is_email_active %}
-        <button><a href="{% url 'email_verification' %}">Verify Email Address</a></button>
+        <li><a href="{% url 'email_verification' %}" class="nav-link px-2 text-black fw-bold link-primary">Verify Email Address</a></li>
         {% endif %}
-        <button><a href="{% url 'create_article' %}">Create Article</a></button>
-        <button><a href="{% url 'articles' user.username %}">Your Articles</a></button>
-    </div>
+      <li><a href="{% url 'logout' %}" class="nav-link px-2 text-black fw-bold link-primary">Logout</a></li>
+    </ul>
+  </div>
+    
 {% endblock %}

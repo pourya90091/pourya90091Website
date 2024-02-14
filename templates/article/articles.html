@@ -3,10 +3,10 @@
 {% block title %}Your Articles{% endblock %}
 
 {% block body %}
-  <div>
+  <ul class="container">
     {% for article in articles %}
-    <a href="{% url 'article' user.username article.slug %}">{{article.title}}</a>
+    <li class="m-2 p-1"><a class="text-decoration-none text-black fw-bold link-primary" href="{% url 'article' user.username article.slug %}">{{article.title}}</a></li>
     {% endfor %}
     {{err}}
-  </div>
+  </ul>
 {% endblock %}

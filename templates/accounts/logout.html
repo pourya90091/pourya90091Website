@@ -3,10 +3,11 @@
 {% block title %}Logout Page{% endblock %}
 
 {% block body %}
-  <h2>Log Out</h2>
-  <form method="post" novalidate>
-    {% csrf_token %}
-    {{ logout_form.as_p }}
-    <button type="submit">Log Out</button>
-  </form>
+  <div class="container text-center mt-5">
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {{ logout_form.as_p }}
+      <button class="btn btn-dark" type="submit">Log Out</button>
+    </form>
+  </div>
 {% endblock %}
