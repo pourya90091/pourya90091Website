@@ -23,7 +23,8 @@ class ArticleView(View):
             md = markdown.Markdown(extensions=["fenced_code"])
             article.content = md.convert(article.content)
             return render(req, "article/article.html", {
-                "article": article
+                "article": article,
+                "user": req.user
             })
 
         raise Http404()

@@ -4,4 +4,7 @@
 
 {% block body %}
   <div>{{article.content|safe}}</div>
+  {% if user == article.user %}
+  <a href="{% url 'edit_article' article.slug %}">Edit Article</a>
+  {% endif %}
 {% endblock %}

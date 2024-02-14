@@ -3,7 +3,7 @@
 {% block title %}Profile{% endblock %}
 
 {% block body %}
-  <form method="post" novalidate>
+  <form enctype="multipart/form-data" method="post" novalidate>
     {% csrf_token %}
     {{ profile_form.as_p }}
     <button type="submit">Edit Profile</button>

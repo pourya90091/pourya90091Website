@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.conf import settings
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.http import HttpRequest
@@ -48,12 +49,17 @@ class ProfileView(View):
                 profile_form.add_error("confirm_new_password", "New password not confirmed correctly.")
                 data_is_valid = False
 
+            if (profile_image) and (profile_image.size > settings.MAX_UPLOAD_SIZE):
+                profile_form.add_error("profile_image", "The maximum size for Profile Image is 50MB.")
+                data_is_valid = False
+
             return data_is_valid
 
-        profile_form = ProfileForm(req.user.username, req.user.email, data=req.POST)
+        profile_form = ProfileForm(req.user.username, req.user.email, data=req.POST, files=req.FILES)
         if profile_form.is_valid():
             username = profile_form.cleaned_data.get("username")
             email = profile_form.cleaned_data.get("email")
+            profile_image = profile_form.files.get("profile_image")
             current_password = profile_form.cleaned_data.get("current_password")
             new_password = profile_form.cleaned_data.get("new_password")
             confirm_new_password = profile_form.cleaned_data.get("confirm_new_password")
@@ -66,6 +72,10 @@ class ProfileView(View):
                     # if the new email was not same as old email, then is_email_active should be False
                     req.user.is_email_active = email == req.user.email
                     req.user.email = email
+                if profile_image:
+                    if req.user.profile_image:
+                        req.user.profile_image.delete()
+                    req.user.profile_image = profile_image
                 if new_password:
                     req.user.set_password(new_password)
 

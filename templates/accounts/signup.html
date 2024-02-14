@@ -4,7 +4,7 @@
 
 {% block body %}
   <h2>Sign Up</h2>
-  <form method="post" novalidate>
+  <form enctype="multipart/form-data" method="post" novalidate>
     {% csrf_token %}
     {{ signup_form.as_p }}
     <button type="submit">Sign Up</button>

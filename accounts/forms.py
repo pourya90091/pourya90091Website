@@ -6,6 +6,7 @@ class SignUpForm(forms.Form):
     password = forms.CharField(max_length=128, required=True)
     confirm_password = forms.CharField(max_length=128, required=True)
     email = forms.EmailField(max_length=128, required=False)
+    profile_image = forms.ImageField(allow_empty_file=False, required=False)
 
 
 class LoginForm(forms.Form):

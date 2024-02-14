@@ -45,12 +45,13 @@ class SignUpView(View):
 
             return data_is_valid
 
-        signup_form = SignUpForm(req.POST)
+        signup_form = SignUpForm(req.POST, req.FILES)
         if signup_form.is_valid():
             username = signup_form.cleaned_data.get("username")
             password = signup_form.cleaned_data.get("password")
             confirm_password = signup_form.cleaned_data.get("confirm_password")
             email = signup_form.cleaned_data.get("email")
+            profile_image = signup_form.files.get("profile_image")
 
             data_is_valid = data_validation()
             if data_is_valid:
@@ -58,7 +59,8 @@ class SignUpView(View):
                                 email=email,
                                 is_active=True,
                                 is_email_active=False,
-                                activate_code=get_random_string(64))
+                                activate_code=get_random_string(64),
+                                profile_image=profile_image)
                 new_user.set_password(password)
                 new_user.save()
 
