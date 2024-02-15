@@ -5,9 +5,9 @@ class ProfileForm(forms.Form):
     username = forms.CharField(max_length=64, required=False)
     email = forms.EmailField(max_length=128, required=False)
     profile_image = forms.ImageField(allow_empty_file=False, required=False)
-    current_password = forms.CharField(max_length=128, required=True)
-    new_password = forms.CharField(max_length=128, required=False)
-    confirm_new_password = forms.CharField(max_length=128, required=False)
+    current_password = forms.CharField(max_length=128, required=True, widget=forms.PasswordInput)
+    new_password = forms.CharField(max_length=128, required=False, widget=forms.PasswordInput)
+    confirm_new_password = forms.CharField(max_length=128, required=False, widget=forms.PasswordInput)
 
     def __init__(self, username_placeholder=None, email_placeholder=None, *args, **kwargs) -> None:
         self.base_fields["username"].widget=forms.TextInput(attrs={
