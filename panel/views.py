@@ -35,11 +35,15 @@ class EditProfileView(View):
         def data_validation():
             data_is_valid = True
 
-            if username:
-                user_exists = User.objects.filter(username__exact=username).exists()
-                if user_exists:
-                    profile_form.add_error("username", "Username is already taken.")
-                    data_is_valid = False
+            user_exists = User.objects.filter(username__exact=username).exists()
+            if user_exists:
+                profile_form.add_error("username", "Username is already taken.")
+                data_is_valid = False
+
+            user_exists = User.objects.filter(email__iexact=email).exists()
+            if user_exists:
+                profile_form.add_error("email", "Email is already taken.")
+                data_is_valid = False
 
             if not req.user.check_password(current_password):
                 profile_form.add_error("current_password", "Current password is not correct.")
