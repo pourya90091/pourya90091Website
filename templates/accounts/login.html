@@ -6,9 +6,16 @@
   <div class="container text-center mt-5">
     <form method="post" novalidate>
       {% csrf_token %}
-      {{ login_form.as_p }}
-      <button class="btn btn-dark" type="submit">Log In</button>
+      <div class="p-2">
+        {{ login_form.username }}
+        {{ login_form.username.errors }}
+      </div>
+      <div class="p-2">
+        {{ login_form.password }}
+        {{ login_form.password.errors }}
+      </div>
+      <button class="btn btn-dark mt-3 mb-3" type="submit">Log In</button>
     </form>
-    <a class="text-decoration-none text-black" href="{% url 'recover_password' %}">Recover Password</a>
   </div>
+  <a class="text-center text-decoration-none text-black link-secondary mt-2" href="{% url 'recover_password' %}">Recover Password</a>
 {% endblock %}

@@ -4,12 +4,19 @@
 {% block title %}Edit Article{% endblock %}
 
 {% block body %}
-  <div class="container">
+  <div class="container m-3">
     <div class="row">
       <form class="col-6" method="post" novalidate>
         {% csrf_token %}
-        {{ article_form.as_p }}
-        <button class="btn btn-dark" type="submit">Edit Article</button>
+        <div class="p-2">
+          {{ article_form.title }}
+          {{ article_form.title.errors }}
+        </div>
+        <div class="p-2">
+          {{ article_form.content }}
+          {{ article_form.content.errors }}
+        </div>
+        <button class="btn btn-dark mt-3 mb-3" type="submit">Edit Article</button>
       </form>
   
       <div class="col-6" id="md-viewer"></div>

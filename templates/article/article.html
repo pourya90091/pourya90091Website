@@ -4,17 +4,19 @@
 
 {% block body %}
   <div class="container">
-    <a href="{% url 'articles' article.user.username %}" class="d-block link-dark text-decoration-none" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+    <a href="{% url 'articles' article.user.username %}" class="d-block link-dark text-decoration-none fw-bold h2 mt-3">
       {% if article.user.profile_image %}
-      <img src="{{ article.user.profile_image.url }}" alt="mdo" width="32" height="32" class="rounded-circle">
+      <img src="{{ article.user.profile_image.url }}" alt="mdo" width="64" height="64" class="rounded-circle">
       {% endif %}
       {{ article.user.username }}
     </a>
 
+    <hr>
     <div class="mt-3 mb-3">{{article.content|safe}}</div>
     <hr>
+
     {% if user == article.user %}
-    <a href="{% url 'edit_article' article.slug %}"><button class="btn btn-dark">Edit Article</button></a>
+    <a href="{% url 'edit_article' article.slug %}"><button class="btn btn-dark mt-3 mb-3">Edit Article</button></a>
     {% endif %}
   </div>
   

@@ -6,8 +6,11 @@
   <div class="container text-center mt-5">
     <form method="post" novalidate>
       {% csrf_token %}
-      {{ logout_form.as_p }}
-      <button class="btn btn-dark" type="submit">Log Out</button>
+      <div class="p-2">
+        {{ logout_form.password }}
+        {{ logout_form.password.errors }}
+      </div>
+      <button class="btn btn-dark mt-3 mb-3" type="submit">Log Out</button>
     </form>
   </div>
 {% endblock %}

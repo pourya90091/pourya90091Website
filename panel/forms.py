@@ -2,19 +2,24 @@ from django import forms
 
 
 class ProfileForm(forms.Form):
-    username = forms.CharField(max_length=64, required=False)
-    email = forms.EmailField(max_length=128, required=False)
+    username = forms.CharField(max_length=64, required=False, widget=forms.TextInput(attrs={
+        "class": "form-control",
+        "placeholder": "New Username"
+    }))
+    email = forms.EmailField(max_length=128, required=False, widget=forms.EmailInput(attrs={
+        "class": "form-control",
+        "placeholder": "New Email"
+    }))
     profile_image = forms.ImageField(allow_empty_file=False, required=False)
-    current_password = forms.CharField(max_length=128, required=True, widget=forms.PasswordInput)
-    new_password = forms.CharField(max_length=128, required=False, widget=forms.PasswordInput)
-    confirm_new_password = forms.CharField(max_length=128, required=False, widget=forms.PasswordInput)
-
-    def __init__(self, username_placeholder=None, email_placeholder=None, *args, **kwargs) -> None:
-        self.base_fields["username"].widget=forms.TextInput(attrs={
-            "placeholder": username_placeholder
-        } if username_placeholder else None)
-        self.base_fields["email"].widget=forms.TextInput(attrs={
-            "placeholder": email_placeholder
-        } if email_placeholder else None)
-
-        super().__init__(*args, **kwargs)
+    current_password = forms.CharField(max_length=128, required=True, widget=forms.PasswordInput(attrs={
+        "class": "form-control",
+        "placeholder": "Current Password"
+    }))
+    new_password = forms.CharField(max_length=128, required=False, widget=forms.PasswordInput(attrs={
+        "class": "form-control",
+        "placeholder": "New Password"
+    }))
+    confirm_new_password = forms.CharField(max_length=128, required=False, widget=forms.PasswordInput(attrs={
+        "class": "form-control",
+        "placeholder": "Confirm New Password"
+    }))

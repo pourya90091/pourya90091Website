@@ -3,14 +3,20 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block body %}
-  <div>
+  <div class="mt-3">
     <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-      <li><a href="{% url 'profile' %}" class="nav-link px-2 text-black fw-bold link-primary">Profile</a></li>
+      <li><a href="{% url 'edit-profile' %}" class="nav-link px-2 text-black fw-bold link-primary">Edit Profile</a></li>
         {% if not user.is_email_active %}
         <li><a href="{% url 'email_verification' %}" class="nav-link px-2 text-black fw-bold link-primary">Verify Email Address</a></li>
         {% endif %}
       <li><a href="{% url 'logout' %}" class="nav-link px-2 text-black fw-bold link-primary">Logout</a></li>
     </ul>
+    <div class="text-center mt-2">
+      {% if request.user.profile_image %}
+      <img src="{{ request.user.profile_image.url }}" alt="mdo" width="150" height="150" class="rounded-circle mb-3">
+      {% endif %}
+      <p class="h4"><span class="fw-bold">{{ request.user.username }}</span> <span class="fst-italic">{{ request.user.email }}</span></p>
+    </div>
   </div>
     
 {% endblock %}

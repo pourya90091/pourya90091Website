@@ -1,0 +1,54 @@
+{% extends 'layout.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block body %}
+  <div class="container-fluid row text-center mt-5">
+    <form class="col-9" enctype="multipart/form-data" method="post" novalidate>
+      {% csrf_token %}
+      <div class="p-2">
+      {{ profile_form.username }}
+      {{ profile_form.username.errors }}
+      </div>
+      <div class="p-2">
+        {{ profile_form.email }}
+        {{ profile_form.email.errors }}
+      </div>
+      <div class="p-2">
+        {{ profile_form.profile_image.label }}: 
+        {{ profile_form.profile_image }}
+        {{ profile_form.profile_image.errors }}
+      </div>
+      <div class="p-2">
+        {{ profile_form.current_password }}
+        {{ profile_form.current_password.errors }}
+      </div>
+      <div class="p-2">
+        {{ profile_form.new_password }}
+        {{ profile_form.new_password.errors }}
+      </div>
+      <div class="p-2">
+        {{ profile_form.confirm_new_password }}
+        {{ profile_form.confirm_new_password.errors }}
+      </div>
+      <button class="btn btn-dark mt-3 mb-3" type="submit">Edit Profile</button>
+    </form>
+    <div class="col-3">
+      {% if request.user.profile_image %}
+      <img src="{{ request.user.profile_image.url }}" alt="mdo" width="100" height="100" class="rounded-circle mb-3">
+      {% endif %}
+      <p><span class="fw-bold">{{ request.user.username }}</span> <span class="fst-italic">{{ request.user.email }}</span></p>
+      <p>At least fill one of the inputs and also fill Current Password input (required), then push Edit Profile button.</p>
+    </div>
+  </div>
+  <style>
+    @media screen and (max-width:700px) {
+      div.col-3 {
+        display: none;
+      }
+      form.col-9 {
+        width: 100%;
+      }
+    }
+  </style>
+{% endblock %}
