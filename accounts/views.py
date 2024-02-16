@@ -34,12 +34,12 @@ class SignUpView(View):
         def data_validation():
             data_is_valid = True
 
-            user_exists = User.objects.filter(username__exact=username).exists()
+            user_exists = User.objects.filter(username__exact=username).exists() if username else False
             if user_exists:
                 signup_form.add_error("username", "Username is already taken.")
                 data_is_valid = False
 
-            user_exists = User.objects.filter(email__iexact=email).exists()
+            user_exists = User.objects.filter(email__iexact=email).exists() if email else False
             if user_exists:
                 signup_form.add_error("email", "Email is already taken.")
                 data_is_valid = False
