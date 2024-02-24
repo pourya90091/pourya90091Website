@@ -17,3 +17,10 @@ class Article(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         super().save(*args, **kwargs)
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, null=False)
+    content = models.TextField()
+    publish = models.DateTimeField(default=timezone.now)

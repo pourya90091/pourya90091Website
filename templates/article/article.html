@@ -1,10 +1,16 @@
 {% extends 'layout.html' %}
+{% load static %}
+{% load humanize %}
 
 {% block title %}{{article.title}}{% endblock %}
 
+{% block css_ref %}
+<link href="{% static 'article/css/article.css' %}" rel="stylesheet">
+{% endblock %}
+
 {% block body %}
   <div class="container">
-    <a href="{% url 'articles' article.user.username %}" class="d-block link-dark text-decoration-none fw-bold h2 mt-3">
+    <a href="{% url 'articles' article.user.username %}" class="d-block text-decoration-none fw-bold h2 mt-3">
       {% if article.user.profile_image %}
       <img src="{{ article.user.profile_image.url }}" alt="mdo" width="64" height="64" class="rounded-circle">
       {% endif %}
@@ -12,12 +18,30 @@
     </a>
 
     <hr>
-    <div class="mt-3 mb-3">{{article.content|safe}}</div>
+    <div class="mt-3 mb-3" id="content" title="{{ article.id }}">{{article.content|safe}}</div>
     <hr>
 
     {% if user == article.user %}
     <a href="{% url 'edit_article' article.slug %}"><button class="btn btn-dark mt-3 mb-3">Edit Article</button></a>
+    <hr>
     {% endif %}
+
+    {% csrf_token %}
+    <textarea class="form-control" name="comment-input" id="comment-input" rows="10" placeholder="Comment..."></textarea>
+    <button id="comment-button" class="btn btn-dark mt-3 mb-3">Comment</button>
+
+    <div id="comments">
+    {% for comment in comments %}
+      <div class="comment">
+        <p><b><a class="text-black link-primary text-decoration-none" href="{% url 'articles' comment.user.username %}">{{ comment.user.username }}</a></b> - {{ comment.publish|naturaltime }}</p>
+        <p>{{ comment.content }}</p>
+      </div>
+      <hr>
+    {% endfor %}
+    </div>
   </div>
-  
+{% endblock %}
+
+{% block js_ref_footer %}
+<script src="{% static 'article/js/article.js' %}"></script>
 {% endblock %}

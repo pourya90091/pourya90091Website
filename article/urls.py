@@ -6,4 +6,7 @@ urlpatterns = [
     path("<str:username>/articles/", views.ArticlesView.as_view(), name="articles"),
     path("<str:username>/<slug:slug>/", views.ArticleView.as_view(), name="article"),
     path("create/", views.CreateArticleView.as_view(), name="create_article"),
+
+    # API Views
+    path("comment/", views.CommentAPIView.as_view(), name="comment"),
 ]

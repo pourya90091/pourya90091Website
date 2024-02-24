@@ -4,10 +4,13 @@ from django.contrib.auth import get_user_model
 from django.utils.decorators import method_decorator
 from django.utils.text import slugify
 from django.urls import reverse
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from django.views import View
 from django.http import HttpRequest, Http404
 from article.forms import ArticleForm
-from article.models import Article
+from article.models import Article, Comment
 import markdown
 
 
@@ -24,6 +27,7 @@ class ArticleView(View):
             article.content = md.convert(article.content)
             return render(req, "article/article.html", {
                 "article": article,
+                "comments": Comment.objects.filter(article__exact=article).all(),
                 "user": req.user
             })
 
@@ -128,3 +132,38 @@ class EditArticleView(View):
         return render(req, "article/edit_article.html", {
             "article_form": article_form
         })
+
+
+@method_decorator(login_required, name='dispatch')
+class CommentAPIView(APIView):
+    def post(self, req: HttpRequest):
+        def data_validation():
+            data_is_valid = True
+
+            if not comment:
+                data_is_valid = False
+
+            article_exists = Article.objects.filter(pk__iexact=article_id).exists()
+            if not article_exists:
+                data_is_valid = False
+
+            return data_is_valid
+
+        def save_comment(user, article, comment):
+            comment = Comment(user=user,
+                            article=article,
+                            content=comment)
+            comment.save()
+
+        comment = req.POST['comment']
+        article_id = req.POST['article_id']
+
+        data_is_valid = data_validation()
+        if data_is_valid:
+            article = Article.objects.filter(pk__iexact=article_id).first()
+
+            save_comment(req.user, article, comment)
+
+            return Response({"comment": comment, "username": req.user.username}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Data was not valid."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)

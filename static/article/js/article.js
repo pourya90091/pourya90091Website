@@ -1,15 +1,34 @@
-var showdown  = require('showdown'),
-    converter = new showdown.Converter()
+const comment_input = document.getElementById('comment-input');
+const comment_button = document.getElementById('comment-button');
+const article_id = document.getElementById('content').title;
+const csrfmiddlewaretoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
 
-const md_viewer = document.getElementById('md-viewer');
-const content = document.getElementById('id_content');
+comment_button.onclick = function () {
+    const url = `${window.location.origin}/comment/`;
 
-md_viewer.innerHTML = converter.makeHtml(content.value) // in case of first loading of the page
+    if (!comment_input.value) {
+        return 1
+    }
 
-content.addEventListener('keydown', function() {
-    md_viewer.innerHTML = converter.makeHtml(content.value)
-});
-
-content.addEventListener('keyup', function() {
-    md_viewer.innerHTML = converter.makeHtml(content.value)
-});
+    $.ajax({
+        url: url,
+        method: "POST",
+        data: {
+            "comment": comment_input.value,
+            "article_id": article_id,
+            "csrfmiddlewaretoken": csrfmiddlewaretoken
+        },
+        success: function (data, status, xhr) {
+        const comments = document.getElementById('comments');
+        comments.innerHTML += `<div class="comment">
+        <p><b><a class="text-black link-primary text-decoration-none" href="">${data.username}</a></b> - Just now</p>
+        <p>${data.comment}</p>
+      </div>
+      <hr>`
+        },
+        error: function (jqXhr, textStatus, errorMessage) {
+            alert(jqXhr.responseJSON.error)
+            error.innerHTML = jqXhr.responseJSON.error
+        }
+    })
+}
