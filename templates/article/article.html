@@ -26,9 +26,11 @@
     <hr>
     {% endif %}
 
+    {% if request.user.last_login %}
     {% csrf_token %}
     <textarea class="form-control" name="comment-input" id="comment-input" rows="10" placeholder="Comment..."></textarea>
     <button id="comment-button" class="btn btn-dark mt-3 mb-3">Comment</button>
+    {% endif %}
 
     <div id="comments">
     {% for comment in comments %}
