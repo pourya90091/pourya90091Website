@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from django.views import View
 from django.http import HttpRequest, Http404
 from article.forms import ArticleForm
-from article.models import Article, Comment
+from article.models import Article, Comment, Reply
 import markdown
 
 
@@ -25,9 +25,14 @@ class ArticleView(View):
             article = Article.objects.filter(slug__iexact=slug, user__exact=user).first()
             md = markdown.Markdown(extensions=["fenced_code"])
             article.content = md.convert(article.content)
+
+            comments = {}
+            for comment in (comment for comment in Comment.objects.filter(article__exact=article).all()):
+                comments[comment] = Reply.objects.filter(comment__exact=comment).all()
+
             return render(req, "article/article.html", {
                 "article": article,
-                "comments": Comment.objects.filter(article__exact=article).all(),
+                "comments": comments,
                 "user": req.user
             })
 
@@ -165,5 +170,40 @@ class CommentAPIView(APIView):
             save_comment(req.user, article, comment)
 
             return Response({"comment": comment, "username": req.user.username}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Data was not valid."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+
+@method_decorator(login_required, name='dispatch')
+class ReplyAPIView(APIView):
+    def post(self, req: HttpRequest):
+        def data_validation():
+            data_is_valid = True
+
+            if not reply:
+                data_is_valid = False
+
+            comment_exists = Comment.objects.filter(pk__iexact=comment_id).exists()
+            if not comment_exists:
+                data_is_valid = False
+
+            return data_is_valid
+
+        def save_reply(user, comment, reply):
+            reply = Reply(user=user,
+                          comment=comment,
+                          content=reply)
+            reply.save()
+
+        reply = req.POST['reply']
+        comment_id = req.POST['comment_id']
+
+        data_is_valid = data_validation()
+        if data_is_valid:
+            comment = Comment.objects.filter(pk__iexact=comment_id).first()
+
+            save_reply(req.user, comment, reply)
+
+            return Response({"reply": reply, "username": req.user.username}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Data was not valid."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)

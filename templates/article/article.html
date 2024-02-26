@@ -4,10 +4,6 @@
 
 {% block title %}{{article.title}}{% endblock %}
 
-{% block css_ref %}
-<link href="{% static 'article/css/article.css' %}" rel="stylesheet">
-{% endblock %}
-
 {% block body %}
   <div class="container">
     <a href="{% url 'articles' article.user.username %}" class="d-block text-decoration-none fw-bold h2 mt-3">
@@ -33,10 +29,19 @@
     {% endif %}
 
     <div id="comments">
-    {% for comment in comments %}
-      <div class="comment">
+    {% for comment, replies in comments.items %}
+      <div class="comment" title="{{ comment.id }}">
         <p><b><a class="text-black link-primary text-decoration-none" href="{% url 'articles' comment.user.username %}">{{ comment.user.username }}</a></b> - {{ comment.publish|naturaltime }}</p>
-        <p>{{ comment.content }}</p>
+        <p>{{ comment.content }} <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="reply_box(this.parentNode.parentNode)">reply</a></p>
+        {% if replies %}
+          {% for reply in replies %}
+          <hr>
+          <div class="reply" style="margin-left: 10%;">
+            <p><b><a class="text-black link-primary text-decoration-none" href="{% url 'articles' reply.user.username %}">{{ reply.user.username }}</a></b> - {{ reply.publish|naturaltime }}</p>
+            <p>{{ reply.content }}</p>
+          </div>
+          {% endfor %}
+        {% endif %}
       </div>
       <hr>
     {% endfor %}

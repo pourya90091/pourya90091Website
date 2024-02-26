@@ -24,3 +24,10 @@ class Comment(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, null=False)
     content = models.TextField()
     publish = models.DateTimeField(default=timezone.now)
+
+
+class Reply(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=False)
+    content = models.TextField()
+    publish = models.DateTimeField(default=timezone.now)

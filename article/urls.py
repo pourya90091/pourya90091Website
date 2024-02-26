@@ -9,4 +9,5 @@ urlpatterns = [
 
     # API Views
     path("comment/", views.CommentAPIView.as_view(), name="comment"),
+    path("reply/", views.ReplyAPIView.as_view(), name="reply"),
 ]
