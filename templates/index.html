@@ -3,5 +3,17 @@
 {% block title %}Index Page{% endblock %}
 
 {% block body %}
-  <h1 class="text-center mt-3">Welcome</h1>
+  <h1 class="text-center mt-3 mb-5">Welcome</h1>
+  <div class="container">
+    <h1>Daily Articles</h1>
+    <hr>
+    {% for article in daily_articles %}
+    <li class="m-2 p-1"><a class="text-decoration-none text-black fw-bold link-primary" href="{% url 'article' article.user.username article.slug %}">{{article.title}}</a></li>
+    {% endfor %}
+    <h1>Recent Articles</h1>
+    <hr>
+    {% for article in recent_articles %}
+    <li class="m-2 p-1"><a class="text-decoration-none text-black fw-bold link-primary" href="{% url 'article' article.user.username article.slug %}">{{article.title}}</a></li>
+    {% endfor %}
+  </div>
 {% endblock %}

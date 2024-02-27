@@ -1,4 +1,5 @@
 *.pyc
+*.article
 db.sqlite3
 .idea
 node_modules/
