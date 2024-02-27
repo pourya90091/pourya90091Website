@@ -39,13 +39,21 @@
           {% if request.user.last_login %}
           <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="reply_box(this.parentNode.parentNode)">reply</a>
           {% endif %}
+          {% if request.user == comment.user %}
+          <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="delete_comment(this.parentNode.parentNode)">delete</a>
+          {% endif %}
         </p>
         {% if replies %}
           {% for reply in replies %}
           <hr>
-          <div class="reply" style="margin-left: 10%;">
+          <div class="reply" title="{{ reply.id }}" style="margin-left: 10%;">
             <p><b><a class="text-black link-primary text-decoration-none" href="{% url 'articles' reply.user.username %}">{{ reply.user.username }}</a></b> - {{ reply.publish|naturaltime }}</p>
-            <p>{{ reply.content }}</p>
+            <p>
+              {{ reply.content }}
+              {% if request.user == reply.user %}
+              <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="delete_reply(this.parentNode.parentNode)">delete</a>
+              {% endif %}
+            </p>
           </div>
           {% endfor %}
         {% endif %}

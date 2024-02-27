@@ -155,10 +155,14 @@ class CommentAPIView(APIView):
             return data_is_valid
 
         def save_comment(user, article, comment):
+            nonlocal comment_id
+
             comment = Comment(user=user,
                             article=article,
                             content=comment)
             comment.save()
+
+            comment_id = comment.id
 
         comment = req.POST['comment']
         article_id = req.POST['article_id']
@@ -167,9 +171,34 @@ class CommentAPIView(APIView):
         if data_is_valid:
             article = Article.objects.filter(pk__iexact=article_id).first()
 
+            comment_id = None
             save_comment(req.user, article, comment)
 
-            return Response({"comment": comment, "username": req.user.username}, status=status.HTTP_200_OK)
+            return Response({"comment": comment, "comment_id": comment_id, "username": req.user.username}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Data was not valid."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+
+@method_decorator(login_required, name='dispatch')
+class DeleteCommentAPIView(APIView):
+    def post(self, req: HttpRequest):
+        def data_validation():
+            data_is_valid = True
+
+            comment_exists = Comment.objects.filter(pk__iexact=comment_id, user__exact=req.user).exists()
+            if not comment_exists:
+                data_is_valid = False
+
+            return data_is_valid
+
+        comment_id = req.POST['comment_id']
+
+        data_is_valid = data_validation()
+        if data_is_valid:
+            comment = Comment.objects.filter(pk__iexact=comment_id).first()
+            comment.delete()
+
+            return Response({"status": "OK"}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Data was not valid."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
@@ -190,10 +219,14 @@ class ReplyAPIView(APIView):
             return data_is_valid
 
         def save_reply(user, comment, reply):
+            nonlocal reply_id
+
             reply = Reply(user=user,
                           comment=comment,
                           content=reply)
             reply.save()
+
+            reply_id = reply.id
 
         reply = req.POST['reply']
         comment_id = req.POST['comment_id']
@@ -202,8 +235,33 @@ class ReplyAPIView(APIView):
         if data_is_valid:
             comment = Comment.objects.filter(pk__iexact=comment_id).first()
 
+            reply_id = None
             save_reply(req.user, comment, reply)
 
-            return Response({"reply": reply, "username": req.user.username}, status=status.HTTP_200_OK)
+            return Response({"reply": reply, "reply_id": reply_id, "username": req.user.username}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Data was not valid."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+
+@method_decorator(login_required, name='dispatch')
+class DeleteReplyAPIView(APIView):
+    def post(self, req: HttpRequest):
+        def data_validation():
+            data_is_valid = True
+
+            reply_exists = Reply.objects.filter(pk__iexact=reply_id, user__exact=req.user).exists()
+            if not reply_exists:
+                data_is_valid = False
+
+            return data_is_valid
+
+        reply_id = req.POST['reply_id']
+
+        data_is_valid = data_validation()
+        if data_is_valid:
+            reply = Reply.objects.filter(pk__iexact=reply_id).first()
+            reply.delete()
+
+            return Response({"status": "OK"}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Data was not valid."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)

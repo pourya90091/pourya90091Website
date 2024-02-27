@@ -20,9 +20,13 @@ comment_button.onclick = function () {
         },
         success: function (data, status, xhr) {
         const comments = document.getElementById('comments');
-        comments.innerHTML += `<div class="comment">
+        comments.innerHTML += `<div class="comment" title="${data.comment_id}">
         <p><b><a class="text-black link-primary text-decoration-none" href="">${data.username}</a></b> - Just now</p>
-        <p>${data.comment}</p>
+        <p>
+            ${data.comment}
+            <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="reply_box(this.parentNode.parentNode)">reply</a>
+            <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="delete_comment(this.parentNode.parentNode)">delete</a>
+        </p>
       </div>
       <hr>`
         },
@@ -66,10 +70,51 @@ function save_reply(comment_element) {
         success: function (data, status, xhr) {
             comment_element.getElementsByClassName('reply-box')[0].remove();
             comment_element.innerHTML += `<hr>
-            <div class="reply" style="margin-left: 10%;">
+            <div class="reply" title="${data.reply_id}" style="margin-left: 10%;">
                 <p><b><a class="text-black link-primary text-decoration-none" href="">${data.username}</a></b> - Just now</p>
-                <p>${data.reply}</p>
+                <p>
+                    ${data.reply}
+                    <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="delete_reply(this.parentNode.parentNode)">delete</a>
+                </p>
             </div>`
+        },
+        error: function (jqXhr, textStatus, errorMessage) {
+            alert(jqXhr.responseJSON.error);
+        }
+    })
+}
+
+function delete_reply(reply_element) {
+    const url = `${window.location.origin}/delete-reply/`;
+
+    $.ajax({
+        url: url,
+        method: "POST",
+        data: {
+            "reply_id": reply_element.title,
+            "csrfmiddlewaretoken": csrfmiddlewaretoken
+        },
+        success: function (data, status, xhr) {
+            reply_element.remove()
+        },
+        error: function (jqXhr, textStatus, errorMessage) {
+            alert(jqXhr.responseJSON.error);
+        }
+    })
+}
+
+function delete_comment(comment_element) {
+    const url = `${window.location.origin}/delete-comment/`;
+
+    $.ajax({
+        url: url,
+        method: "POST",
+        data: {
+            "comment_id": comment_element.title,
+            "csrfmiddlewaretoken": csrfmiddlewaretoken
+        },
+        success: function (data, status, xhr) {
+            comment_element.remove()
         },
         error: function (jqXhr, textStatus, errorMessage) {
             alert(jqXhr.responseJSON.error);
