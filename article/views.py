@@ -126,7 +126,7 @@ class EditArticleView(View):
 
             data_is_valid = data_validation()
             if data_is_valid:
-                article = Article.objects.filter(slug__iexact=slugify(title), user__exact=req.user).first()
+                article = Article.objects.filter(slug__iexact=slug, user__exact=req.user).first()
 
                 article.title = title
                 article.content = content
