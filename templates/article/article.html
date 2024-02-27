@@ -32,7 +32,12 @@
     {% for comment, replies in comments.items %}
       <div class="comment" title="{{ comment.id }}">
         <p><b><a class="text-black link-primary text-decoration-none" href="{% url 'articles' comment.user.username %}">{{ comment.user.username }}</a></b> - {{ comment.publish|naturaltime }}</p>
-        <p>{{ comment.content }} <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="reply_box(this.parentNode.parentNode)">reply</a></p>
+        <p>
+          {{ comment.content }}
+          {% if request.user.last_login %}
+          <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="reply_box(this.parentNode.parentNode)">reply</a>
+          {% endif %}
+        </p>
         {% if replies %}
           {% for reply in replies %}
           <hr>
