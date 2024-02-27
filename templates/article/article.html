@@ -26,6 +26,8 @@
     {% csrf_token %}
     <textarea class="form-control" name="comment-input" id="comment-input" rows="10" placeholder="Comment..."></textarea>
     <button id="comment-button" class="btn btn-dark mt-3 mb-3">Comment</button>
+    {% else %}
+    <p><a class="text-black link-primary text-decoration-none fw-bold" href="{% url 'login' %}">Login</a> or <a class="text-black link-primary text-decoration-none fw-bold" href="{% url 'signup' %}">Sign up</a> if you want to comment.</p>
     {% endif %}
 
     <div id="comments">
