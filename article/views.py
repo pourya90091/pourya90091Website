@@ -73,6 +73,10 @@ class CreateArticleView(View):
                 article_form.add_error("title", "You already have an article with this name.")
                 data_is_valid = False
 
+            if "<script" in content: # decline attempt for using script tag
+                article_form.add_error("content", "Seems like you want to use a script tag! Sorry but you can't.")
+                data_is_valid = False
+
             return data_is_valid
 
         article_form = ArticleForm(data=req.POST)
@@ -116,6 +120,10 @@ class EditArticleView(View):
                 if article_exists:
                     article_form.add_error("title", "You have another article with this name.")
                     data_is_valid = False
+
+            if "<script" in content: # decline attempt for using script tag
+                article_form.add_error("content", "Seems like you want to use a script tag! Sorry but you can't.")
+                data_is_valid = False
 
             return data_is_valid
 
