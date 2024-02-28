@@ -37,10 +37,10 @@
         <p>
           {{ comment.content }}
           {% if request.user.last_login %}
-          <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="reply_box(this.parentNode.parentNode)">reply</a>
+          <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="replyBox(this.parentNode.parentNode)">reply</a>
           {% endif %}
           {% if request.user == comment.user %}
-          <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="delete_comment(this.parentNode.parentNode)">delete</a>
+          <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="deleteComment(this.parentNode.parentNode)">delete</a>
           {% endif %}
         </p>
         {% if replies %}
@@ -51,7 +51,7 @@
             <p>
               {{ reply.content }}
               {% if request.user == reply.user %}
-              <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="delete_reply(this.parentNode.parentNode)">delete</a>
+              <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="deleteReply(this.parentNode.parentNode)">delete</a>
               {% endif %}
             </p>
           </div>

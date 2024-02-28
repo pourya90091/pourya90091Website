@@ -1,34 +1,36 @@
-const comment_input = document.getElementById('comment-input');
-const comment_button = document.getElementById('comment-button');
-const article_id = document.getElementById('content').title;
+const commentInput = document.getElementById('comment-input');
+const commentButton = document.getElementById('comment-button');
+const articleId = document.getElementById('content').title;
 const csrfmiddlewaretoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
 
-comment_button.onclick = function () {
+commentButton.onclick = function () {
     const url = `${window.location.origin}/comment/`;
 
-    if (!comment_input.value) {
+    if (!commentInput.value) {
         return 1;
     }
 
     $.ajax({
         url: url,
-        method: "POST",
+        method: 'POST',
         data: {
-            "comment": comment_input.value,
-            "article_id": article_id,
-            "csrfmiddlewaretoken": csrfmiddlewaretoken
+            'comment': commentInput.value,
+            'articleId': articleId,
+            'csrfmiddlewaretoken': csrfmiddlewaretoken
         },
         success: function (data, status, xhr) {
+        commentInput.value = '';
+
         const comments = document.getElementById('comments');
         comments.innerHTML += `<div class="comment" title="${data.comment_id}">
         <p><b><a class="text-black link-primary text-decoration-none" href="">${data.username}</a></b> - Just now</p>
         <p>
             ${data.comment}
-            <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="reply_box(this.parentNode.parentNode)">reply</a>
-            <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="delete_comment(this.parentNode.parentNode)">delete</a>
+            <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="replyBox(this.parentNode.parentNode)">reply</a>
+            <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="deleteComment(this.parentNode.parentNode)">delete</a>
         </p>
       </div>
-      <hr>`
+      <hr>`;
         },
         error: function (jqXhr, textStatus, errorMessage) {
             alert(jqXhr.responseJSON.error);
@@ -36,47 +38,46 @@ comment_button.onclick = function () {
     })
 }
 
-function reply_box(comment_element) {
-    if (comment_element.getElementsByClassName('reply-box').length == 1) {
-        comment_element.getElementsByClassName('reply-box')[0].remove();
-    }
-    else {
-        reply_box = document.createElement('div');
-        reply_box.className = 'reply-box';
-        reply_box.innerHTML = `
-        <textarea class="form-control" name="reply-input" id="reply-input" rows="10" placeholder="Reply..."></textarea>
-        <button id="reply-button" class="btn btn-dark mt-3 mb-3" onclick="save_reply(this.parentNode.parentNode)">Reply</button>`;
+function replyBox(commentElement) {
+    if (commentElement.getElementsByClassName('reply-box').length == 1) {
+        commentElement.getElementsByClassName('reply-box')[0].remove();
+    } else {
+        newReplyBox = document.createElement('div');
+        newReplyBox.className = 'reply-box';
+        newReplyBox.innerHTML = `
+        <textarea autofocus class="form-control" name="reply-input" id="reply-input" rows="10" placeholder="Reply..."></textarea>
+        <button id="reply-button" class="btn btn-dark mt-3 mb-3" onclick="saveReply(this.parentNode.parentNode)">Reply</button>`;
     
-        comment_element.appendChild(reply_box);
+        commentElement.appendChild(newReplyBox);
     }
 }
 
-function save_reply(comment_element) {
+function saveReply(commentElement) {
     const url = `${window.location.origin}/reply/`;
 
-    let reply_input = comment_element.querySelector('textarea#reply-input');
-    if (!reply_input.value) {
+    let replyInput = commentElement.querySelector('textarea#reply-input');
+    if (!replyInput.value) {
         return 1;
     }
 
     $.ajax({
         url: url,
-        method: "POST",
+        method: 'POST',
         data: {
-            "reply": reply_input.value,
-            "comment_id": comment_element.title,
-            "csrfmiddlewaretoken": csrfmiddlewaretoken
+            'reply': replyInput.value,
+            'comment_id': commentElement.title,
+            'csrfmiddlewaretoken': csrfmiddlewaretoken
         },
         success: function (data, status, xhr) {
-            comment_element.getElementsByClassName('reply-box')[0].remove();
-            comment_element.innerHTML += `<hr>
+            commentElement.getElementsByClassName('reply-box')[0].remove();
+            commentElement.innerHTML += `<hr>
             <div class="reply" title="${data.reply_id}" style="margin-left: 10%;">
                 <p><b><a class="text-black link-primary text-decoration-none" href="">${data.username}</a></b> - Just now</p>
                 <p>
                     ${data.reply}
-                    <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="delete_reply(this.parentNode.parentNode)">delete</a>
+                    <a class="text-black link-secondary text-decoration-none" style="cursor: pointer;" onclick="deleteReply(this.parentNode.parentNode)">delete</a>
                 </p>
-            </div>`
+            </div>`;
         },
         error: function (jqXhr, textStatus, errorMessage) {
             alert(jqXhr.responseJSON.error);
@@ -84,18 +85,18 @@ function save_reply(comment_element) {
     })
 }
 
-function delete_reply(reply_element) {
+function deleteReply(replyElement) {
     const url = `${window.location.origin}/delete-reply/`;
 
     $.ajax({
         url: url,
-        method: "POST",
+        method: 'POST',
         data: {
-            "reply_id": reply_element.title,
-            "csrfmiddlewaretoken": csrfmiddlewaretoken
+            'reply_id': replyElement.title,
+            'csrfmiddlewaretoken': csrfmiddlewaretoken
         },
         success: function (data, status, xhr) {
-            reply_element.remove()
+            replyElement.remove();
         },
         error: function (jqXhr, textStatus, errorMessage) {
             alert(jqXhr.responseJSON.error);
@@ -103,18 +104,18 @@ function delete_reply(reply_element) {
     })
 }
 
-function delete_comment(comment_element) {
+function deleteComment(commentElement) {
     const url = `${window.location.origin}/delete-comment/`;
 
     $.ajax({
         url: url,
-        method: "POST",
+        method: 'POST',
         data: {
-            "comment_id": comment_element.title,
-            "csrfmiddlewaretoken": csrfmiddlewaretoken
+            'comment_id': commentElement.title,
+            'csrfmiddlewaretoken': csrfmiddlewaretoken
         },
         success: function (data, status, xhr) {
-            comment_element.remove()
+            commentElement.remove();
         },
         error: function (jqXhr, textStatus, errorMessage) {
             alert(jqXhr.responseJSON.error);
